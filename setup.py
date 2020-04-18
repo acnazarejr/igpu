@@ -2,7 +2,7 @@
 
 from setuptools import setup
 
-VERSION = '0.0.1'
+VERSION = '0.1.0'
 AUTHOR = 'Antonio Carlos Nazare Jr.'
 EMAIL = 'antonio.nazare@dcc.ufmg.br'
 REQUIREMENTS = [line for line in open('requirements.txt').read().split('\n') if line != '']
@@ -34,15 +34,9 @@ setup(
     ],
     description='A cross-platform module for retrieving information and stats on installed gpus.',
     long_description=open('readme.md').read(),
-    keywords='face recognition detection biometry',
+    keywords='gpu cuda nvidia',
     packages=['igpu'],
     zip_safe=False,
-    python_requires='>=3.5',
-    install_requires=REQUIREMENTS,
-    # entry_points={
-    #     'console_scripts': [
-    #         'labcontrol=demos.labcontrol.cli:main',
-    #         'labcontrolstd=demos.labcontrolstd.cli:main'
-    #     ]
-    # }
+    python_requires='>=3.4',
+    install_requires=REQUIREMENTS
 )
