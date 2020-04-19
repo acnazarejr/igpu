@@ -365,13 +365,13 @@ Helper class that handles the on-board memory attributes. Reported total memory 
 *Usage*
 
 ```python
->>> gpu.memory.total
+>>> gpu_info.memory.total
 11178.5
->>> gpu.memory.used
+>>> gpu_info.memory.used
 10799.0
->>> gpu.memory.free
+>>> gpu_info.memory.free
 379.5
->>> gpu.memory.unit
+>>> gpu_info.memory.unit
 'MiB'
 ```
 
