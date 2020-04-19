@@ -1,6 +1,8 @@
 # iGPU
 
 ![GitHub](https://img.shields.io/github/license/acnazarejr/igpu)
+![PyPI](https://img.shields.io/pypi/v/igpu)
+![PyPI - Status](https://img.shields.io/pypi/status/igpu)
 
 The `igpu` is a pythonic cross-platform module for getting the GPU info and status from NVIDA GPU boards using th `pynvml` ([a python wrapper around the NVML library](https://github.com/gpuopenanalytics/pynvml)).
 
