@@ -1,4 +1,5 @@
 # iGPU
+
 A  for retrieving information and stats on installed gpus.
 
 The `igpu` is a pythonic cross-platform module for getting the GPU info and status from NVIDA GPU boards using th `pynvml` ([a python wrapper around the NVML library](https://github.com/gpuopenanalytics/pynvml)).
@@ -54,22 +55,93 @@ print(igpu.nvidia_driver_version())
 
 The `igpu` module is very versatile and can be used in a different of ways, given below.
 
-To include iGPU in your Python code, all you hve to do is included it on your script:
+To include iGPU in your Python code, all you have to do is included it on your script:
 
 ```python
 import igpu
 ```
 
-Once included all functions are available. The main functions along with a short description of inputs, outputs and their functionality can be found below.
+Once included all functions are available. The main functions along with a short description of inputs, outputs, and functionality can be found in the next sections.
 
-### Main Functions
+### Available Devices
 
-#### ```nvidia_driver_version()```
+The `igpu` can manipulate information and stats for all available devices. Availability is determined based on the GPU boards installed on the host.
+
+#### ```igpu.count_devices()```
+
+Returns the number of available GPU devices installed on the host.
+
 ```python
->>> igpu.nvidia_driver_version()
-(430, 34)
+>>> igpu.count_devices()
+4
+```
+
+#### ```igpu.devices_index()```
+
+Returns an index list, containing the device index for each available GPU.
+
+```python
+>>> igpu.devices_index()
+[0, 1, 2, 3]
+```
+
+#### ```igpu.get_device(device_index)```
+
+Given a `device_index`, returns a [`GpuInfo`](#gpuinfo-class-description) object containing the device properties and stats. If a nonexistent `device_index` is provided, an error is thrown.
+
+All properties and methods of `GpuInfo` class are described in [GPUInfo Class Description](#gpuinfo-class-description) section.
+
+```python
+>>> gpu_info = igpu.get_device(2)
+>>> print(gpu_info.index, gpu_info.name)
+2, GeForce GTX 1080 Ti
+```
+
+#### ```igpu.devices()```
+
+Returns a [`GpuInfo`](#gpuinfo-class-description) list containing all available devices.
+
+All properties and methods of `GpuInfo` class are described in [GPUInfo Class Description](#gpuinfo-class-description) section.
+
+```python
+>>> for gpu_info in igpu.devices():
+...     print(gpu_info.index, gpu_info.name)
+0, GeForce GTX 1080 Ti
+1, GeForce GTX 1080 Ti
+2, GeForce GTX 1080 Ti
+3, GeForce GTX 1080 Ti
+```
+
+### Visible Devices
+
+By manually setting the environment variable ```CUDA_VISIBLE_DEVICES``` (or automatically, by other software, like SLURM cluster manager), the user can mask which GPUs should be visible to different Deep Learning frameworks (e.g. TensorFlow, PyTorch, Caffee, etc). See [this stackoverflow question ](https://stackoverflow.com/questions/39649102/how-do-i-select-which-gpu-to-run-a-job-on) for more info.
+
+The `igpu` module can deal with this, and consider only the visible devices, by the following methods. This functionality is handy for those who work on environments where the visible devices are defined externally. For example, [when the SLURM sets](https://slurm.schedmd.com/gres.html) the `CUDA_VISIBLE_DEVICES` variable in a job.
+
+For the next examples, consider that the `CUDA_VISIBLE_DEVICES` variable was set as below:
+
+```shell
+export CUDA_VISIBLE_DEVICES=1,3
 ```
 
 
+#### ```igpu.count_visible_devices()```
 
-### GPUInfo class description
+Returns the number of visible GPU devices, defined by the `CUDA_VISIBLE_DEVICES` environmnt variable.
+
+```python
+>>> igpu.count_visible_devices()
+2
+```
+
+#### ```igpu.visible_devices_index()```
+
+Returns an index list, containing the device index for each visible GPU defined by the `CUDA_VISIBLE_DEVICES` environmnt variable.
+
+```python
+>>> igpu.visible_devices_index()
+[1, 3]
+```
+
+
+### GPUInfo Class Description

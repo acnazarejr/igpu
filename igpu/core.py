@@ -15,10 +15,10 @@ from igpu.gpu_info import GPUInfo
 
 def count_devices() -> int:
     """
-    Finds the number of available gpu devices.
+    Returns the number of available GPU devices installed on the host.
 
     Returns:
-        int: The number of available gpus.
+        int: The number of available devices.
     """
     query = smi.getInstance().DeviceQuery('count')
     if query:
@@ -28,17 +28,18 @@ def count_devices() -> int:
 
 def count_visible_devices() -> int:
     """
-    Finds the number of visible gpu devices defined by the CUDA_VISIBLE_DEVICES environmnt variable.
+    Returns the number of visible GPU devices, defined by the CUDA_VISIBLE_DEVICES
+    environmnt variable.
 
     Returns:
-        int: The number of visible gpus.
+        int: The number of visible devices.
     """
     return len(visible_devices_index())
 
 
 def devices_index() -> List[int]:
     """
-    Get the device index for each available gpu.
+    Returns an index list, containing the device index for each available GPU.
 
     Returns:
         list: A list with all available devices index.
@@ -51,8 +52,8 @@ def devices_index() -> List[int]:
 
 def visible_devices_index() -> List[int]:
     """
-    Get the device index for each visible gpu defined by the CUDA_VISIBLE_DEVICES
-    environmnt variable.
+    Returns an index list, containing the device index for each visible GPU defined by the
+    CUDA_VISIBLE_DEVICES environmnt variable.
 
     Returns:
         list: A list with all visible devices index.
@@ -79,13 +80,13 @@ def nvidia_driver_version() -> Tuple[Optional[int], Optional[int]]:
 
 def get_device(device_index: int) -> GPUInfo:
     """
-    Given a device index, returns a GpuInfo object containing the device infos and stats.
+    Given a device index, returns a GpuInfo object containing the device properties and stats.
 
     Args:
-        device_index (int): The index of desired device.
+        device_index (int): The index of the desired device.
 
     Returns:
-        GpuInfo: A GpuInfo object with device info.
+        GpuInfo: A GpuInfo object containing the device properties and stats.
     """
     if count_devices() == 0:
         raise ValueError(f'There are no devices available')
@@ -98,7 +99,7 @@ def get_device(device_index: int) -> GPUInfo:
 
 def devices() -> List[GPUInfo]:
     """
-    Returns a list of GpuInfo object of all available devices.
+    Returns a GpuInfo list containing all available devices.
 
 
     Returns:
