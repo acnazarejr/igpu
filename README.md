@@ -20,7 +20,7 @@ pip install igpu
 import igpu
 gpu_count = igpu.count_devices()
 gpu = igpu.get_devices(0)
-print(f'This host has {gpu} devices.')
+print(f'This host has {gpu_count} devices.')
 print(f'The first gpu is a {gpu.name} with {gpu.memory.total:.0f}{gpu.memory.unit}.')
 ```
 
