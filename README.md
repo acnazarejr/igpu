@@ -1,7 +1,5 @@
 # iGPU
 
-A  for retrieving information and stats on installed gpus.
-
 The `igpu` is a pythonic cross-platform module for getting the GPU info and status from NVIDA GPU boards using th `pynvml` ([a python wrapper around the NVML library](https://github.com/gpuopenanalytics/pynvml)).
 
 **Table of Contents**
@@ -51,7 +49,7 @@ print(igpu.nvidia_driver_version())
 (430, 34)
 ```
 
-## Usage
+## Usage Documentation
 
 The `igpu` module is very versatile and can be used in a different of ways, given below.
 
@@ -143,5 +141,174 @@ Returns an index list, containing the device index for each visible GPU defined 
 [1, 3]
 ```
 
+#### ```igpu.visible_devices()```
+
+Returns a [`GpuInfo`](#gpuinfo-class-description) list containing all visible devices defined by the `CUDA_VISIBLE_DEVICES` environmnt variable.
+
+All properties and methods of `GpuInfo` class are described in [GPUInfo Class Description](#gpuinfo-class-description) section.
+
+```python
+>>> for gpu_info in igpu.visible_devices():
+...     print(gpu_info.index, gpu_info.name)
+1, GeForce GTX 1080 Ti
+3, GeForce GTX 1080 Ti
+```
+
 
 ### GPUInfo Class Description
+
+The `GPUInfo` is a helper class that handles the attributes of each GPU. The user can access all properties and stats accordingly with the GPU attributes categories. Each category has another helper subclass described below. Also, the class, and consequently, its subclasses, has an implicit conversion to a pretty string.
+
+For the all next examples, consider that the a instace of GPUInfo was created as follow:
+
+```python
+gpu_info = igpu.get_device(0)
+```
+
+The GPUInfo has the general GPU attributes:
+
+*Attributes*
+
+* `index` (`int`) - The index of the GPU device.
+* `name` (`str`) - The official product name of the GPU.
+* `serial` (`str`) - The GPU board serial number. This number matches the serial number physically printed on each board. It is a globally unique immutable alphanumeric value.
+* `uuid` (`str`) - The GPU board uuid. This value is the globally unique immutable alphanumeric identifier of the GPU. It does not correspond to any physical label on the board.
+* `bios` (`str`) - The BIOS version of the GPU board.
+
+*Usage*
+
+```python
+>>> gpu_info.index
+0
+>>> gpu_info.name
+'GeForce GTX 1080 Ti'
+>>> gpu_info.serial
+'N/A'
+>>> gpu_info.uuid
+'GPU-d9bf777c-e49e-e609-f873-d05b3208970b'
+>>> gpu_info.bios
+'86.02.39.00.01'
+```
+
+*String Conversion*
+
+```python
+>>> print(gpu_info)
+INDEX        : 0
+BOARD NAME   : 'GeForce GTX 1080 Ti'
+SERIAL       : 'N/A'
+UUID         : 'GPU-115dafb8-26db-32ba-d729-f21b29fc001f'
+BIOS VERSION : '86.02.39.00.01'
+
+GPU MEMORY:
+    Total :   11178.50 MiB (100.00%)
+    Used  :   10799.00 MiB ( 96.61%)
+    Free  :     379.50 MiB (  3.39%)
+
+GPU UTILIZATION:
+    Performance : P2
+    Temperature : '61C'
+    Graphics    : [|||||||||||              ] 44.00%
+    Memory      : [||||||||                 ] 35.00%
+    Fan         : [|||||||||                ] 36.00%
+
+PCI INFO:
+    Bus           : '88'
+    Bus ID        : '0000:88:00.0'
+    Device        : '00'
+    Device ID     : '1B0610DE'
+    Sub-System ID : '1210196E'
+    Generation    : '3 (Max: 3)'
+    Link Width    : '16x (Max: 16x)'
+
+GPU CLOCK:
+    Graphics (Shader)             : 1885 (Max: 1911)
+    SM (Streaming Multiprocessor) : 1885 (Max: 1911)
+    Memory                        : 5005 (Max: 5505)
+
+POWER INFO:
+    Management : 'Supported'
+    Draw       : 122.23
+    Limit      : 250.0
+    Min Limit  : 125.0
+    Max Limit  : 300.0
+
+PROCESSES
+    PID    | NAME              | USER          | PARENT   | CREATION TIME          | GPU MEM
+    5764   | python            | acnazarejr    | 5759     | '2020-04-16 17:57:12'  | 10789
+```
+
+
+#### Memory Attributes (`GPUMemoryInfo`)
+
+Helper class that handles the on-board memory attributes. Reported total memory is affected by the ECC state. If ECC is enabled, the total available memory is decreased by several percent, due to the requisite parity bits. The driver may also reserve a small amount of memory for internal use, even without active work on the GPU. These attributes are available for all products.
+
+*Attributes*
+
+* `total` (`float`) - The total installed GPU memory;
+* `used` (`float`) - The total memory allocated by active contexts;
+* `free` (`float`) - The total free memory;
+* `unit` (`str`) - The memory unit of measurement;
+
+*Usage*
+
+```python
+>>> gpu.memory.total
+11178.5
+>>> gpu.memory.used
+10799.0
+>>> gpu.memory.free
+379.5
+>>> gpu.memory.unit
+'MiB'
+```
+
+*String Conversion*
+
+```python
+>>> print(gpu_info.memory)
+GPU MEMORY:
+    Total :   11178.50 MiB (100.00%)
+    Used  :   10799.00 MiB ( 96.61%)
+    Free  :     379.50 MiB (  3.39%)
+```
+
+#### Utilization Stats (`GPUUtilizationInfo`)
+
+Helper class that handles the utilization stats of each GPU. Utilization rates report how busy each GPU is over time, and can be used to determine how much an application is using the GPUs in the system.
+
+**Attributes**
+
+* `gpu` (`float`) - The percent of the time over the past sample period during which one or more kernels were executing on the GPU. The sample period may be between 1 second and 1/6 second, depending on the product.
+* `memory` (`float`) - The percent of the time over the past sample period during which global (device) memory was being read or written. The sample period may be between 1 second and 1/6 second, depending on the product.
+* `fan` (`float`) - For a healthy fan, the percent of fan's speed.
+* `temperature` (`int`) - The core GPU temperature. For all discrete and S-class products.
+* `performance` (`int`) - The current performance state for the GPU. States range from `P0` (maximum performance) to `P12` (minimum performance).
+
+**Usage**
+
+```python
+>>> gpu.utilization.gpu
+65
+>>> gpu.utilization.memory
+59
+>>> gpu.utilization.fan
+36
+>>> gpu.utilization.temperature
+61
+>>> gpu.utilization.performance
+'P2'
+```
+
+**String Conversion**
+
+```python
+>>> print(gpu.utilization)
+GPU UTILIZATION:
+    Performance : 'P2'
+    Temperature : '61C'
+    Graphics    : [||||||||||||||||         ] 65.00%
+    Memory      : [||||||||||||||           ] 59.00%
+    Fan         : [|||||||||                ] 36.00%
+```
+

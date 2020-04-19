@@ -66,7 +66,7 @@ def visible_devices_index() -> List[int]:
 
 def nvidia_driver_version() -> Tuple[Optional[int], Optional[int]]:
     """
-    Find the version of nvidia driver.
+    Returns the nvidia driver version.
 
     Returns:
         tuple: A tuple with major and minor driver version.
@@ -116,8 +116,8 @@ def devices() -> List[GPUInfo]:
 
 def visible_devices() -> List[GPUInfo]:
     """
-    Returns a list of GpuInfo object of the visible devices.
-
+    Returns a GpuInfo list containing all available devices defined by the
+    CUDA_VISIBLE_DEVICES environmnt variable.
 
     Returns:
         list: A list of GpuInfo objects.

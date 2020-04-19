@@ -13,13 +13,12 @@ from datetime import datetime
 
 class GPUMemoryInfo(object):
     """
-    Class used to store the info about the GPU memory.
+    Helper class that handles the memory attributes of each GPU
 
-    On-board memory information. Reported total memory is affected by ECC state.
-    If ECC is enabled the total available memory is decreased by several percent,
-    due to the requisite parity bits.
-    The driver may also reserve a small amount of memory for internal use,
-    even without active work on the GPU. For all products.
+    On-board memory information. Reported total memory is affected by the ECC state.
+    If ECC is enabled, the total available memory is decreased by several percent, due to the
+    requisite parity bits. The driver may also reserve a small amount of memory for internal use,
+    even without active work on the GPU. These attributes are available for all products.
     """
 
     def __init__(self, memory_dict: Dict) -> None:
@@ -57,10 +56,9 @@ class GPUMemoryInfo(object):
         ]
         return '\n'.join(ret)
 
-
 class GPUUtilizationInfo(object):
     """
-    Class used to store the info about the GPU utilization.
+    Helper class that handles the utilization stats of each GPU
 
     Utilization rates report how busy each GPU is over time, and can be used to determine how much
     an application is using the GPUs in the system.
@@ -116,7 +114,6 @@ class GPUUtilizationInfo(object):
             f'    {"Fan":12s}: [{"|"*int(self.fan/4):25s}] {self.fan:3.2f}%',
         ]
         return '\n'.join(ret)
-
 
 class GPUPCIInfo(object):
     """
@@ -203,7 +200,6 @@ class GPUPCIInfo(object):
             f'    {"Link Width":14s}: {self.current_link_width} (Max: {self.max_link_width})',
         ]
         return '\n'.join(ret)
-
 
 class GPUClockInfo(object):
     """
@@ -327,8 +323,6 @@ class GPUPowerInfo(object):
         ]
         return '\n'.join(ret)
 
-
-
 class GPUProcessInfo(object):
     """
     Class used to store the info of a unique process having compute context on the board
@@ -390,8 +384,6 @@ class GPUProcessInfo(object):
         ]
         return ' | '.join(ret)
 
-
-
 class GPUProcessesInfo(object):
     """
     Class used to store the info about the GPU processes info.
@@ -425,11 +417,9 @@ class GPUProcessesInfo(object):
             ret += '    ' + str(process) + '\n'
         return ret
 
-
-
 class GPUInfo(object):
     """
-    Class used to manipulate the gpu device info and stats.
+    Helper class that handles the attributes of each GPU
     """
 
 
@@ -449,14 +439,12 @@ class GPUInfo(object):
 
     @property
     def index(self) -> int:
-        """int: Returns the index of GPU device."""
+        """int: Returns the index of the GPU device."""
         return self._index
 
     @property
     def name(self) -> str:
-        """str: Returns the official product name of the GPU.
-        This is an alphanumeric string. For all products.
-        """
+        """str: Returns the official product name of the GPU."""
         return self._name
 
     @property
