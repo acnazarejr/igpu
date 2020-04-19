@@ -9,11 +9,12 @@ Implementation of igpu GPUInfo class
 import textwrap
 from typing import Dict, List
 from datetime import datetime
+from igpu import parser
 
 
 class GPUMemoryInfo(object):
     """
-    Helper class that handles the memory attributes of each GPU
+    Helper class that handles the memory attributes of each GPU.
 
     On-board memory information. Reported total memory is affected by the ECC state.
     If ECC is enabled, the total available memory is decreased by several percent, due to the
@@ -58,7 +59,7 @@ class GPUMemoryInfo(object):
 
 class GPUUtilizationInfo(object):
     """
-    Helper class that handles the utilization stats of each GPU
+    Helper class that handles the utilization stats of each GPU.
 
     Utilization rates report how busy each GPU is over time, and can be used to determine how much
     an application is using the GPUs in the system.
@@ -74,17 +75,17 @@ class GPUUtilizationInfo(object):
 
     @property
     def gpu(self) -> float:
-        """float: Returns the percent of time over the past sample period during which one or more
-        kernels was executing  on the GPU.
-        The sample period may be between 1 second and 1/6 second depending on the product.
+        """float: Returns the percent of the time over the past sample period during which one or
+        more kernels were executing on the GPU. The sample period may be between 1 second and 1/6
+        second, depending on the product.
         """
         return self._gpu
 
     @property
     def memory(self) -> float:
-        """float: Returns the percent of time over the past sample period during which
-        global (device) memory was being read or written. The sample period may be between
-        1 second and 1/6 second depending on the product."""
+        """float: Returns the percent of the time over the past sample period during which global
+        (device) memory was being read or written. The sample period may be between 1 second and
+        1/6 second, depending on the product."""
         return self._memory
 
     @property
@@ -99,8 +100,8 @@ class GPUUtilizationInfo(object):
 
     @property
     def performance(self) -> int:
-        """int: Return the current performance state for the GPU.
-        States range from P0 (maximum performance) to P12 (minimum performance).
+        """int: Return the current performance state for the GPU. States range from
+        P0 (maximum performance) to P12 (minimum performance).
         """
         return self._performance
 
@@ -117,12 +118,11 @@ class GPUUtilizationInfo(object):
 
 class GPUPCIInfo(object):
     """
-    Class used to store the info about the GPU PCI Info.
+    Helper class that handles the pci attributes of each GPU.
 
-    Basic PCI info for the device. Some of this information may change whenever cards are
-    added/removed/moved in a system. For all products.
-
-    Also provides the PCIe link generation and bus width.
+    The class handles the basic PCI info for the device. Some of this information may change
+    whenever cards are added/removed/moved in a system. It also provides the PCIe link generation
+    and bus width. These attributes are available for all products.
     """
 
     def __init__(self, pci_dict: Dict) -> None:
@@ -203,9 +203,9 @@ class GPUPCIInfo(object):
 
 class GPUClockInfo(object):
     """
-    Class used to store the info about the GPU clocks info.
+    Helper class that handles the clocks attributes of each GPU.
 
-    Current frequency at which parts of the GPU are running. All readings are in MHz.
+    The current frequency at which parts of the GPU are running. All readings are in MHz.
     """
 
     def __init__(self, clocks_dict: Dict) -> None:
@@ -260,12 +260,12 @@ class GPUClockInfo(object):
 
 class GPUPowerInfo(object):
     """
-    Class used to store the info about the GPU Power Info.
+    Helper class that handles the power attributes of each GPU.
 
     Power readings help to shed light on the current power usage of the GPU, and the factors that
-    affect that usage. When power management is enabled the GPU limits power draw under load to fit
-    within a predefined power envelope by manipulating the current performance state. See below for
-    limits of availability.
+    affect that usage. When power management is enabled, the GPU limits power draw under load to
+    fit within a defined power envelope by manipulating the current performance state.
+    See below for limits of availability.
     """
 
     def __init__(self, power_dict: Dict) -> None:
@@ -325,7 +325,7 @@ class GPUPowerInfo(object):
 
 class GPUProcessInfo(object):
     """
-    Class used to store the info of a unique process having compute context on the board
+    Helper class that handles each process which has compute context on the GPU.
     """
     def __init__(self, process_dict: Dict) -> None:
         self._pid = process_dict['pid']
@@ -340,37 +340,38 @@ class GPUProcessInfo(object):
 
     @property
     def pid(self) -> int:
-        """int: Returns the process pid"""
+        """int: Returns the process PID."""
         return self._pid
 
     @property
     def name(self) -> str:
-        """str: Returns the process name"""
+        """str: Returns The process name."""
         return self._name
 
     @property
     def user(self) -> str:
-        """str: Returns the process user"""
+        """str: Returns The name of the user that owns the process."""
         return self._user
 
     @property
     def parent_pid(self) -> int:
-        """int: Returns the process parent_id"""
+        """int: Returns the process parent PID."""
         return self._parent_id
 
     @property
     def parent_name(self) -> str:
-        """str: Returns the process parent_name"""
+        """str: Returns the process parent name."""
         return self._parent_name
 
     @property
     def create_time(self) -> str:
-        """str: Returns the process create_time"""
+        """str: Returns the process creation time as a floating point number expressed in seconds
+        since the epoch, in UTC."""
         return self._create_time
 
     @property
     def gpu_memory(self) -> int:
-        """int: Returns the process gpu_memory"""
+        """int: Returns the amount of GPU memory allocated by the process."""
         return self._gpu_memory
 
     def __str__(self) -> str:
@@ -384,24 +385,17 @@ class GPUProcessInfo(object):
         ]
         return ' | '.join(ret)
 
-class GPUProcessesInfo(object):
+class GPUProcessesInfo(list):
     """
-    Class used to store the info about the GPU processes info.
+
 
     List of processes having compute context on the device.
     """
 
     def __init__(self, processes_list: List) -> None:
-        self._processes = [GPUProcessInfo(process_dict) for process_dict in processes_list]
-
-    @property
-    def all(self) -> List[GPUProcessInfo]:
-        """list: Returns a list with all processes having compute context on the device."""
-        return self._processes
-
-    def __getitem__(self, key: int) -> GPUProcessInfo:
-        """GPUProcessInfo: Return the process at position key"""
-        return self._processes[key]
+        list.__init__(self)
+        for process_dict in processes_list:
+            self.append(GPUProcessInfo(process_dict))
 
     def __str__(self):
         ret = [
@@ -413,7 +407,7 @@ class GPUProcessesInfo(object):
             f'{"GPU MEM":6s}',
         ]
         ret = 'PROCESSES\n' + '    ' + ' | '.join(ret) + '\n'
-        for process in self.all:
+        for process in self:
             ret += '    ' + str(process) + '\n'
         return ret
 
@@ -493,6 +487,29 @@ class GPUInfo(object):
     def processes(self) -> GPUProcessesInfo:
         "GPUProcessesInfo: Returns the GPU board clocks info."
         return self._processes_info
+
+    def update(self) -> None:
+        """
+        Updates the GPU attributes.
+        """
+
+        device_dict = parser.parser_query_dict(self.index, parser.get_all_info())
+
+        if device_dict is None:
+            raise ValueError(f'Invalid device index: {self.index}.')
+
+        self._index = device_dict['index']
+        self._name = device_dict['name']
+        self._serial = device_dict['serial']
+        self._uuid = device_dict['uuid']
+        self._bios = device_dict['bios']
+
+        self._memory_info = GPUMemoryInfo(device_dict['memory'])
+        self._utilization_info = GPUUtilizationInfo(device_dict['utilization'])
+        self._pci_info = GPUPCIInfo(device_dict['pci'])
+        self._clocks_info = GPUClockInfo(device_dict['clocks'])
+        self._power_info = GPUPowerInfo(device_dict['power'])
+        self._processes_info = GPUProcessesInfo(device_dict['processes'])
 
 
     def __str__(self):
