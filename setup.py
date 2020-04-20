@@ -2,7 +2,7 @@
 
 from setuptools import setup
 
-VERSION = '0.1.0'
+VERSION = '0.1.1'
 AUTHOR = 'Antonio Carlos Nazare Jr.'
 EMAIL = 'antonio.nazare@dcc.ufmg.br'
 REQUIREMENTS = [line for line in open('requirements.txt').read().split('\n') if line != '']
