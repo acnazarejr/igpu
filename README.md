@@ -332,16 +332,16 @@ PCI INFO:
     Link Width    : '16x (Max: 16x)'
 
 GPU CLOCK:
-    Graphics (Shader)             : 1885 (Max: 1911)
-    SM (Streaming Multiprocessor) : 1885 (Max: 1911)
-    Memory                        : 5005 (Max: 5505)
+    Graphics : 1911.0 MHz (Max: 1911.0)
+    SM       : 1911.0 MHz (Max: 1911.0)
+    Memory   : 5005.0 MHz (Max: 5505.0)
 
 POWER INFO:
     Management : 'Supported'
-    Draw       : 122.23
-    Limit      : 250.0
-    Min Limit  : 125.0
-    Max Limit  : 300.0
+    Draw       : 122.23 W
+    Limit      : 250.0 W
+    Min Limit  : 125.0 W
+    Max Limit  : 300.0 W
 
 PROCESSES
     PID    | NAME              | USER          | PARENT   | CREATION TIME          | GPU MEM
@@ -394,8 +394,8 @@ Helper class that handles the utilization stats of each GPU. Utilization rates r
 * `gpu` (`float`) - The percent of the time over the past sample period during which one or more kernels were executing on the GPU. The sample period may be between 1 second and 1/6 second, depending on the product.
 * `memory` (`float`) - The percent of the time over the past sample period during which global (device) memory was being read or written. The sample period may be between 1 second and 1/6 second, depending on the product.
 * `fan` (`float`) - For a healthy fan, the percent of fan's speed.
-* `temperature` (`int`) - The core GPU temperature. For all discrete and S-class products.
-* `performance` (`int`) - The current performance state for the GPU. States range from `P0` (maximum performance) to `P12` (minimum performance).
+* `temperature` (`float`) - The core GPU temperature. For all discrete and S-class products.
+* `performance` (`str`) - The current performance state for the GPU. States range from `P0` (maximum performance) to `P12` (minimum performance).
 
 *Usage*
 
@@ -489,12 +489,13 @@ The current frequency at which parts of the GPU are running. All readings are in
 
 *Attributes*
 
-* `graphics` (`int`) - The current frequency of graphics (shader) clock.
-* `sm` (`int`) - The current frequency of SM (Streaming Multiprocessor) clock.
-* `memory` (`int`) - The current frequency of memory clock.
-* `max_graphics` (`int`) - The maximum frequency of graphics (shader) clock.
-* `max_sm` (`int`) - The maximum frequency of SM (Streaming Multiprocessor) clock.
-* `max_memory` (`int`) - The maximum frequency of memory clock.
+* `graphics` (`float`) - The current frequency of graphics (shader) clock.
+* `sm` (`float`) - The current frequency of SM (Streaming Multiprocessor) clock.
+* `memory` (`float`) - The current frequency of memory clock.
+* `max_graphics` (`float`) - The maximum frequency of graphics (shader) clock.
+* `max_sm` (`float`) - The maximum frequency of SM (Streaming Multiprocessor) clock.
+* `max_memory` (`float`) - The maximum frequency of memory clock.
+* `unit` (`str`) - The clock unit of measurement.
 
 *Usage*
 
@@ -511,6 +512,8 @@ The current frequency at which parts of the GPU are running. All readings are in
 1911
 >>> gpu_info.clocks.max_memory
 5505
+>>> gpu_info.clocks.unit
+'MHz'
 ```
 
 *String Conversion*
@@ -518,9 +521,9 @@ The current frequency at which parts of the GPU are running. All readings are in
 ```python
 >>> print(gpu_info.clocks)
 GPU CLOCK:
-    Graphics (Shader)             : 1885 (Max: 1911)
-    SM (Streaming Multiprocessor) : 1885 (Max: 1911)
-    Memory                        : 5005 (Max: 5505)
+    Graphics : 1911.0 MHz (Max: 1911.0)
+    SM       : 1911.0 MHz (Max: 1911.0)
+    Memory   : 5005.0 MHz (Max: 5505.0)
 ```
 
 ### Power Attributes (`GPUPowerInfo`)
@@ -536,6 +539,7 @@ Power readings help to shed light on the current power usage of the GPU, and the
 * `limit` (`int`) - The software power limit, in watts. Set by software such as nvidia-smi. Only available if power management is supported. Requires Inforom PWR object version 3.0 or higher or Kepler device.
 * `min_limit` (`int`) - The minimum value in watts that power limit can be set to. Only on supported devices from Kepler family.
 * `max_limit` (`int`) - The maximum value in watts that power limit can be set to. Only on supported devices from Kepler family."""
+* `unit` (`str`) - The clock unit of measurement.
 
 *Usage*
 
@@ -550,6 +554,8 @@ Power readings help to shed light on the current power usage of the GPU, and the
 125.0
 >>> gpu_info.power.max_limit
 300.0
+>>> gpu_info.power.unit
+'W'
 ```
 
 *String Conversion*
@@ -558,10 +564,10 @@ Power readings help to shed light on the current power usage of the GPU, and the
 >>> print(gpu_info.power)
 POWER INFO:
     Management : Supported
-    Draw       : 93.067
-    Limit      : 250.0
-    Min Limit  : 125.0
-    Max Limit  : 300.0
+    Draw       : 93.067 W
+    Limit      : 250.0 W
+    Min Limit  : 125.0 W
+    Max Limit  : 300.0 W
 ```
 
 ### Processeses Attributes(`GPUProcessesInfo` and `GPUProcessInfo`)

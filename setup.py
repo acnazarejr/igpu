@@ -2,7 +2,7 @@
 
 from setuptools import setup
 
-VERSION = '0.1.1'
+VERSION = '0.1.2'
 AUTHOR = 'Antonio Carlos Nazare Jr.'
 EMAIL = 'antonio.nazare@dcc.ufmg.br'
 REQUIREMENTS = [line for line in open('requirements.txt').read().split('\n') if line != '']
@@ -17,10 +17,15 @@ setup(
     url='http://github.com/acnazarejr/igpu',
     download_url='http://github.com/acnazarejr/igpu',
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Environment :: Console',
         'Intended Audience :: Developers',
-        'License :: Other/Proprietary License',
+        'License :: OSI Approved :: MIT License',
+        'Intended Audience :: Developers',
+        'Intended Audience :: Education',
+        'Intended Audience :: End Users/Desktop',
+        'Intended Audience :: Other Audience',
+        'Intended Audience :: System Administrators',
         'Natural Language :: English',
         'Operating System :: Microsoft :: Windows :: Windows 10',
         'Operating System :: Microsoft :: Windows :: Windows 7',

@@ -98,9 +98,11 @@ def parser_query_dict(device_index: int, query_dict: Dict) -> Optional[Dict]:
         parsed_dict['power']['limit'] = device_dict['power_readings']['power_limit']
         parsed_dict['power']['min_limit'] = device_dict['power_readings']['min_power_limit']
         parsed_dict['power']['max_limit'] = device_dict['power_readings']['max_power_limit']
+        parsed_dict['power']['unit'] = device_dict['power_readings']['unit']
 
-        parsed_dict['processes'] = list()
-        if device_dict['processes'] is not None:
+        parsed_dict['processes'] = None
+        if device_dict['processes'] is not None and device_dict['processes'] != 'N/A':
+            parsed_dict['processes'] = list()
             for process_dict in device_dict['processes']:
                 _pid = psutil.Process(process_dict['pid'])
                 with _pid.oneshot():

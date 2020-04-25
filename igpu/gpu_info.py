@@ -7,6 +7,7 @@ Implementation of igpu GPUInfo class
 """
 
 import textwrap
+import math
 from typing import Dict, List
 from datetime import datetime
 from igpu import parser
@@ -28,6 +29,11 @@ class GPUMemoryInfo(object):
         self._free = memory_dict['free']
         self._unit = memory_dict['unit']
 
+        self._total = self._total if isinstance(self._total, float) else float('NaN')
+        self._used = self._used if isinstance(self._used, float) else float('NaN')
+        self._free = self._free if isinstance(self._free, float) else float('NaN')
+        self._unit = self._unit if isinstance(self._unit, str) else 'N/A'
+
     @property
     def total(self) -> float:
         """float: Returns the total installed GPU memory."""
@@ -44,8 +50,8 @@ class GPUMemoryInfo(object):
         return self._free
 
     @property
-    def unit(self) -> float:
-        """float: Returns the memory unit of measurement."""
+    def unit(self) -> str:
+        """str: Returns the memory unit of measurement."""
         return self._unit
 
     def __str__(self) -> str:
@@ -69,9 +75,14 @@ class GPUUtilizationInfo(object):
         self._gpu = utilization_dict['gpu']
         self._memory = utilization_dict['memory']
         self._fan = utilization_dict['fan']
-        self._temperature = utilization_dict['temperature']
-        self._performance = utilization_dict['performance']
+        self._temp = utilization_dict['temperature']
+        self._perf = utilization_dict['performance']
 
+        self._gpu = float(self._gpu) if isinstance(self._gpu, int) else float('NaN')
+        self._memory = float(self._memory) if isinstance(self._memory, int) else float('NaN')
+        self._fan = float(self._fan) if isinstance(self._fan, int) else float('NaN')
+        self._temp = float(self._temp) if isinstance(self._temp, int) else float('NaN')
+        self._perf = self._perf if isinstance(self._perf, str) else 'N/A'
 
     @property
     def gpu(self) -> float:
@@ -94,25 +105,41 @@ class GPUUtilizationInfo(object):
         return self._fan
 
     @property
-    def temperature(self) -> int:
-        """int: Returns the core GPU temperature. For all discrete and S-class products."""
-        return self._temperature
+    def temperature(self) -> float:
+        """float: Returns the core GPU temperature. For all discrete and S-class products."""
+        return self._temp
 
     @property
-    def performance(self) -> int:
-        """int: Return the current performance state for the GPU. States range from
+    def performance(self) -> str:
+        """str: Return the current performance state for the GPU. States range from
         P0 (maximum performance) to P12 (minimum performance).
         """
-        return self._performance
+        return self._perf
 
     def __str__(self) -> str:
+
+        if not math.isnan(self.gpu):
+            ginfo = f'[{"|"*int(self.gpu/4):25s}] {self.gpu:3.2f}%'
+        else:
+            ginfo = 'N/A'
+
+        if not math.isnan(self.memory):
+            gmemory = f'[{"|"*int(self.memory/4):25s}] {self.memory:3.2f}%'
+        else:
+            gmemory = 'N/A'
+
+        if not math.isnan(self.fan):
+            gfan = f'[{"|"*int(self.fan/4):25s}] {self.fan:3.2f}%'
+        else:
+            gfan = 'N/A'
+
         ret = [
             'GPU UTILIZATION:',
             f'    {"Performance":12s}: {self.performance}',
-            f'    {"Temperature":12s}: {self.temperature}C',
-            f'    {"Graphics":12s}: [{"|"*int(self.gpu/4):25s}] {self.gpu:3.2f}%',
-            f'    {"Memory":12s}: [{"|"*int(self.memory/4):25s}] {self.memory:3.2f}%',
-            f'    {"Fan":12s}: [{"|"*int(self.fan/4):25s}] {self.fan:3.2f}%',
+            f'    {"Temperature":12s}: {self.temperature:3.2f}C',
+            f'    {"Graphics":12s}: {ginfo}',
+            f'    {"Memory":12s}: {gmemory}',
+            f'    {"Fan":12s}: {gfan}',
         ]
         return '\n'.join(ret)
 
@@ -209,52 +236,65 @@ class GPUClockInfo(object):
     """
 
     def __init__(self, clocks_dict: Dict) -> None:
-        self._graphics = clocks_dict['graphics']
+        self._gr = clocks_dict['graphics']
         self._sm = clocks_dict['sm']
         self._memory = clocks_dict['memory']
-        self._max_graphics = clocks_dict['max_graphics']
+        self._max_gr = clocks_dict['max_graphics']
         self._max_sm = clocks_dict['max_sm']
-        self._max_memory = clocks_dict['max_memory']
+        self._max_mem = clocks_dict['max_memory']
         self._unit = clocks_dict['unit']
 
+        self._gr = float(self._gr) if isinstance(self._gr, int) else float('NaN')
+        self._sm = float(self._sm) if isinstance(self._sm, int) else float('NaN')
+        self._memory = float(self._memory) if isinstance(self._memory, int) else float('NaN')
+        self._max_gr = float(self._max_gr) if isinstance(self._max_gr, int) else float('NaN')
+        self._max_sm = float(self._max_sm) if isinstance(self._max_sm, int) else float('NaN')
+        self._max_mem = float(self._max_mem) if isinstance(self._max_mem, int) else float('NaN')
+        self._unit = self._unit if isinstance(self._unit, str) else 'N/A'
+
     @property
-    def graphics(self) -> int:
-        """int: Returns the current frequency of graphics (shader) clock."""
-        return self._graphics
+    def graphics(self) -> float:
+        """float: Returns the current frequency of graphics (shader) clock."""
+        return self._gr
 
     #pylint: disable=invalid-name
     @property
-    def sm(self) -> int:
-        """int: Returns the current frequency of SM (Streaming Multiprocessor) clock."""
+    def sm(self) -> float:
+        """float: Returns the current frequency of SM (Streaming Multiprocessor) clock."""
         return self._sm
     #pylint: enable=invalid-name
 
     @property
-    def memory(self) -> int:
-        """int: Returns the current frequency of memory clock."""
+    def memory(self) -> float:
+        """float: Returns the current frequency of memory clock."""
         return self._memory
 
     @property
-    def max_graphics(self) -> int:
-        """int: Returns the maximum frequency of graphics (shader) clock."""
-        return self._max_graphics
+    def max_graphics(self) -> float:
+        """float: Returns the maximum frequency of graphics (shader) clock."""
+        return self._max_gr
 
     @property
-    def max_sm(self) -> int:
-        """int: Returns the maximum frequency of SM (Streaming Multiprocessor) clock."""
+    def max_sm(self) -> float:
+        """float: Returns the maximum frequency of SM (Streaming Multiprocessor) clock."""
         return self._max_sm
 
     @property
-    def max_memory(self) -> int:
-        """int: Returns the maximum frequency of memory clock."""
-        return self._max_memory
+    def max_memory(self) -> float:
+        """float: Returns the maximum frequency of memory clock."""
+        return self._max_mem
+
+    @property
+    def unit(self) -> str:
+        """str: Returns the clock unit of measurement."""
+        return self._unit
 
     def __str__(self):
         ret = [
             'GPU CLOCK:',
-            f'    {"Graphics (Shader)":30s}: {self.graphics} (Max: {self.max_graphics})',
-            f'    {"SM (Streaming Multiprocessor)":30s}: {self.sm} (Max: {self.max_sm})',
-            f'    {"Memory":30s}: {self.memory} (Max: {self.max_memory})',
+            f'    {"Graphics":9s}: {self.graphics:.1f} {self.unit} (Max: {self.max_graphics:.1f})',
+            f'    {"SM":9s}: {self.sm:.1f} {self.unit} (Max: {self.max_sm:.1f})',
+            f'    {"Memory":9s}: {self.memory:.1f} {self.unit} (Max: {self.max_memory:.1f})',
         ]
         return '\n'.join(ret)
 
@@ -272,8 +312,16 @@ class GPUPowerInfo(object):
         self._management = power_dict['management']
         self._draw = power_dict['draw']
         self._limit = power_dict['limit']
-        self._min_limit = power_dict['min_limit']
-        self._max_limit = power_dict['max_limit']
+        self._min_lim = power_dict['min_limit']
+        self._max_lim = power_dict['max_limit']
+        self._unit = power_dict['unit']
+
+        self._management = self._management if isinstance(self._management, str) else 'N/A'
+        self._draw = self._draw if isinstance(self._draw, float) else float('NaN')
+        self._limit = self._limit if isinstance(self._limit, float) else float('NaN')
+        self._min_lim = self._min_lim if isinstance(self._min_lim, float) else float('NaN')
+        self._max_lim = self._max_lim if isinstance(self._max_lim, float) else float('NaN')
+        self._unit = self._unit if isinstance(self._unit, str) else 'N/A'
 
 
     @property
@@ -284,42 +332,47 @@ class GPUPowerInfo(object):
         return self._management
 
     @property
-    def draw(self) -> int:
-        """int: Returns the last measured power draw for the entire board, in watts.
+    def draw(self) -> float:
+        """float: Returns the last measured power draw for the entire board, in watts.
         Only available if power management is supported.
         This reading is accurate to within +/- 5 watts.
         Requires Inforom PWR object version 3.0 or higher or Kepler device."""
         return self._draw
 
     @property
-    def limit(self) -> int:
-        """int: Returns the software power limit, in watts. Set by software such as nvidia-smi.
+    def limit(self) -> float:
+        """float: Returns the software power limit, in watts. Set by software such as nvidia-smi.
         Only available if power management is supported.
         Requires Inforom PWR object version 3.0 or higher or Kepler device.
         """
         return self._limit
 
     @property
-    def min_limit(self) -> int:
-        """int: Returns the minimum value in watts that power limit can be set to.
+    def min_limit(self) -> float:
+        """float: Returns the minimum value in watts that power limit can be set to.
         Only on supported devices from Kepler family.
         """
-        return self._min_limit
+        return self._min_lim
 
     @property
-    def max_limit(self) -> int:
-        """int: Returns the maximum value in watts that power limit can be set to.
+    def max_limit(self) -> float:
+        """float: Returns the maximum value in watts that power limit can be set to.
         Only on supported devices from Kepler family."""
-        return self._max_limit
+        return self._max_lim
+
+    @property
+    def unit(self) -> str:
+        """str: Returns the power unit of measurement."""
+        return self._unit
 
     def __str__(self):
         ret = [
             'POWER INFO:',
             f'    {"Management":11s}: {self.management}',
-            f'    {"Draw":11s}: {self.draw}',
-            f'    {"Limit":11s}: {self.limit}',
-            f'    {"Min Limit":11s}: {self.min_limit}',
-            f'    {"Max Limit":11s}: {self.max_limit}',
+            f'    {"Draw":11s}: {self.draw:.2f} {self.unit}',
+            f'    {"Limit":11s}: {self.limit:.2f} {self.unit}',
+            f'    {"Min Limit":11s}: {self.min_limit:.2f} {self.unit}',
+            f'    {"Max Limit":11s}: {self.max_limit:.2f} {self.unit}',
         ]
         return '\n'.join(ret)
 
@@ -424,12 +477,20 @@ class GPUInfo(object):
         self._uuid = device_dict['uuid']
         self._bios = device_dict['bios']
 
+        self._name = self._name if isinstance(self._name, str) else 'N/A'
+        self._serial = self._serial if isinstance(self._serial, str) else 'N/A'
+        self._uuid = self._uuid if isinstance(self._uuid, str) else 'N/A'
+        self._bios = self._bios if isinstance(self._bios, str) else 'N/A'
+
         self._memory_info: GPUMemoryInfo = GPUMemoryInfo(device_dict['memory'])
         self._utilization_info = GPUUtilizationInfo(device_dict['utilization'])
         self._pci_info = GPUPCIInfo(device_dict['pci'])
         self._clocks_info = GPUClockInfo(device_dict['clocks'])
         self._power_info = GPUPowerInfo(device_dict['power'])
-        self._processes_info = GPUProcessesInfo(device_dict['processes'])
+        if device_dict['processes'] is None:
+            self._processes_info = None
+        else:
+            self._processes_info = GPUProcessesInfo(device_dict['processes'])
 
     @property
     def index(self) -> int:
@@ -449,8 +510,9 @@ class GPUInfo(object):
 
     @property
     def uuid(self) -> str:
-        """str: Returns the GPU board uuid. This value is the globally unique immutable alphanumeric
-        identifier of the GPU. It does not correspond to any physical label on the board."""
+        """str: Returns the GPU board uuid. This value is the globally unique immutable
+        alphanumeric identifier of the GPU. It does not correspond to any physical label on
+        the board."""
         return self._uuid
 
     @property
