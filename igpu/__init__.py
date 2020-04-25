@@ -2,7 +2,7 @@
 
 __author__ = 'Antonio C. Nazare Jr.'
 __email__ = 'antonio.nazare@dcc.ufmg.br'
-__version__ = '0.1.1'
+__version__ = '0.1.2'
 
 
 from igpu.core import count_devices, count_visible_devices
