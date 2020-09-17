@@ -8,7 +8,7 @@ Implementation of igpu GPUInfo class
 
 import textwrap
 import math
-from typing import Dict, List
+from typing import Dict, List, Optional
 from datetime import datetime
 from igpu import parser
 
@@ -546,7 +546,7 @@ class GPUInfo(object):
         return self._power_info
 
     @property
-    def processes(self) -> GPUProcessesInfo:
+    def processes(self) -> Optional[GPUProcessesInfo]:
         "GPUProcessesInfo: Returns the GPU board clocks info."
         return self._processes_info
 
